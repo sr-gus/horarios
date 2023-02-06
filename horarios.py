@@ -187,6 +187,11 @@ def to_xlsx(schedules):
 if __name__ == '__main__':
     clear()
     codes = input('Ingresa las claves de tus materias separadas por espacios: ').split(' ')
+    for i in range(len(codes)):
+        if codes[i][0] == '0':
+            codes[i] = codes[i][1:]
+    print(codes)
+    sleep(3)
     print('Cargando grupos de la página de la SSA...')
     options = load_html(codes)
     clear()
