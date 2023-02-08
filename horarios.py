@@ -40,7 +40,7 @@ def load_html(codes):
         save = True
         for i in range(len(tracks)):
             text = tracks[i].get_text().strip()
-            if text == 'L+' and (len(code) != 4 or code[0] != '5'):
+            if text == 'L+' and (len(code) != 4 or (code[0] != '5' and code[0] != '6')):
                 save = False
             if ':' in text:
                 hours.append(text)
@@ -99,15 +99,17 @@ def select_options(options):
 
 def create_schedules(options):
     all_permutations = list(product(*options.values()))
+    if not all_permutations:
+        return []
     valid_permutations = []
     schedules_count = 1
     print('  0%')
     for permutation in all_permutations:
-        schedules = (group[-1] for group in permutation)
+        schedules = list((group[-1] for group in permutation))
         if nmax(reduce(add, schedules)) <= 1:
             valid_permutations.append(permutation) 
         percentage = 100*schedules_count/len(all_permutations)
-        if schedules_count and schedules_count % (len(all_permutations)//10) == 0:
+        if schedules_count and (len(all_permutations) < 10 or schedules_count % (len(all_permutations)//10) == 0):
             print('  {:.2f} %'.format(percentage))
         schedules_count += 1
     print(' {} horarios creados'.format(len(valid_permutations)))
@@ -172,7 +174,7 @@ def to_xlsx(schedules):
             if max_width > 8:
                 sheet.column_dimensions[column[0].column_letter].width = max_width*1.2
         percentage = 100*schedule_count/len(schedules)
-        if schedule_count % (len(schedules)//10) == 0:
+        if len(schedules) < 10  or schedule_count % (len(schedules)//10) == 0:
             print('  {:.2f} %'.format(percentage))
         if schedule_count % 100 == 0:
             book.save(filename = 'horarios {} - {}.xlsx'.format(100*(files-1)+1, 100*files))
